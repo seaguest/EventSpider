@@ -13,7 +13,7 @@ class doubanSpider(scrapy.Spider):
 #    start_urls = [
 #        "http://www.damai.cn/projectlist.do",
  #   ]
-    start_urls = ["http://www.douban.com/location/wuhan/events/future-all?start=%d" %(i*10) for i in range(1)]
+    start_urls = ["http://www.douban.com/location/wuhan/events/future-all?start=%d" %(i*10) for i in range(2)]
     
     # for testing
     '''
