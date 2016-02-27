@@ -1,9 +1,10 @@
 import scrapy
 
-from eventSpider.items import EventItem
+from eventSpider.items.item import EventItem
 from scrapy.selector import HtmlXPathSelector 
 from scrapy.http import Request
 import time
+from eventSpider.items.MyDateUtil import DamaiDateUtil
 
 class damaiSpider(scrapy.Spider):
     name = "damai"
@@ -11,7 +12,7 @@ class damaiSpider(scrapy.Spider):
 #    start_urls = [
 #        "http://www.damai.cn/projectlist.do",
  #   ]
-    start_urls = ["http://www.damai.cn/projectlist.do?pageIndex=%d" %(i+1) for i in range(10)]
+    start_urls = ["http://www.damai.cn/projectlist.do?pageIndex=%d" %(i+1) for i in range(1)]
 
     def parse(self, response):       
         #time.sleep(2) 
@@ -27,17 +28,21 @@ class damaiSpider(scrapy.Spider):
             yield Request(link,callback=self.parseEvent)
             
     def parseEvent(self, response):
-        #filename = response.url.split("/")[3]
-        #with open(filename, 'wb') as f:
-        # url=response.selector.xpath('//ul[@id="performList"]/div[@class="ri-infos"]/h2/a/@href/text()')[0].extract()
-        #f.write(response.body)
+        '''
+        filename = response.url.split("/")[3]
+        with open(filename, 'wb') as f:
+            f.write(response.body)
+        
+        '''
         item=EventItem()
         item['url']=response.url
         
         item['title']=response.selector.xpath('//div[@class="m-goods"]/h2[@class="tt"]/span[@class="txt"]/text()')[0].extract()
         
-        item['startTime']=response.selector.xpath('//div[@class="m-sdbox m-showtime"]/div[@class="ct"]/span[@class="txt"]/text()')[0].extract()
-        
+        dateText = response.selector.xpath('//div[@class="m-sdbox m-showtime"]/div[@class="ct"]/span[@class="txt"]/text()')[0].extract()
+        item['eventDate']=DamaiDateUtil.createEventDate(dateText);
+
+
         item['location']=response.selector.xpath('//div[@class="m-sdbox m-venue"]/div[@class="ct"]/p[@class="txt"]/a[@target="_blank"]/text()')[0].extract()
         
         item['organizer']="damai.cn"
@@ -46,4 +51,3 @@ class damaiSpider(scrapy.Spider):
 
         item['introduction']=response.selector.xpath('//div[@class="pre"]')[0].extract()
         return item  
-            

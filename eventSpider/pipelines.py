@@ -11,14 +11,18 @@ from scrapy import log
 import codecs
 import json
 from scrapy.pipelines.images import ImagesPipeline
+from scrapy.utils.serialize import ScrapyJSONEncoder
+_encoder = ScrapyJSONEncoder(ensure_ascii=False)
 
 class JsonPipeline(object):
     def __init__(self):
         self.file = codecs.open('test.json', 'wb', encoding='utf-8')
 
     def process_item(self, item, spider):
-        line = json.dumps(dict(item), ensure_ascii=False) + "\n"
+        #line = json.dumps(dict(item), ensure_ascii=False) + "\n"
+        line = _encoder.encode(item);
         self.file.write(line)
+        #self.file.write(_encoder.encode(line))
         return item
 
     def spider_closed(self, spider):
