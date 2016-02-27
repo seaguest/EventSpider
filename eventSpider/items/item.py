@@ -1,9 +1,12 @@
 from scrapy.item import Item, Field
 
 
+'''
+	this item is used to store the craled information
+'''
 class EventItem(Item):
 	# define the fields for your item here like:
-	url = Field()
+	srcUrl = Field()
 	
 	title = Field()
 	
@@ -16,6 +19,17 @@ class EventItem(Item):
 	keywords = Field()
 
 	introduction = Field()
+	
+	''' we hash the event key words, date, location to make sure a event is unique'''
+	hashcode = Field()
 
 	image_urls = Field()
 	images = Field()
+
+
+'''
+	This object is used to filter request URL
+'''
+class VisitedURL(Item):
+	url = Field()
+	orgDupURL = Field()

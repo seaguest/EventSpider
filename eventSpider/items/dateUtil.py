@@ -34,7 +34,6 @@ class DamaiDateUtil(MyDateUtil):
 
         startDate = DamaiDateUtil.parseDate(dates[0])
 
-        print "+++++++++++++++", text
         #UnitEventDate
         unitEventDate = UnitEventDate()
         unitEventDate['startDate'] = startDate
@@ -49,9 +48,6 @@ class DamaiDateUtil(MyDateUtil):
         eventDate['unitDate'] = unitEventDate
         eventDate['repeateType'] = repeatType
         return eventDate
-
-print DamaiDateUtil.createEventDate("2016.07.22-2016.07.24")
-
 
 class DoubanDateUtil(MyDateUtil):
     ''' 

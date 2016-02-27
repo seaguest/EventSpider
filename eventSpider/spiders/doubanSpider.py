@@ -5,15 +5,13 @@ from scrapy.selector import HtmlXPathSelector
 from scrapy.http import Request
 from textAnalyzer.jieba.keywords import keyWordGenerator
 import time
-from eventSpider.items.MyDateUtil import DoubanDateUtil
+from eventSpider.items.dateUtil import DoubanDateUtil
 
 
 class doubanSpider(scrapy.Spider):
     name = "douban"
     allowed_domains = ["douban.com"]
-#    start_urls = [
-#        "http://www.damai.cn/projectlist.do",
- #   ]
+    
     start_urls = ["http://www.douban.com/location/wuhan/events/future-all?start=%d" %(i*10) for i in range(2)]
     
     # for testing
@@ -48,7 +46,7 @@ class doubanSpider(scrapy.Spider):
         
         item=EventItem()
 
-        item['url']=response.url
+        item['srcUrl']=response.url
         item['title']=response.selector.xpath('//div[@id="event-info"]/div[@class="event-info"]/h1[@itemprop="summary"]/text()')[0].extract()
 
         item['keywords']=keyWordGenerator.generateKeywords(item['title'])

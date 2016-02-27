@@ -65,8 +65,12 @@ DOWNLOAD_DELAY=3
 #    'tutorial.pipelines.SomePipeline': 300,
 #}
 
+# URL FILTER
+DUPEFILTER_CLASS = 'eventSpider.filter.filter.CustomFilter'
+
+
 ITEM_PIPELINES = {
-    'eventSpider.pipelines.JsonPipeline': 300,
+    'eventSpider.pipelines.DBPipeline': 300,
     'eventSpider.pipelines.MyImagesPipeline':1,
 }
 
@@ -77,6 +81,8 @@ MONGODB_SERVER = "localhost"
 MONGODB_PORT = 27017 
 MONGODB_DB = "lehuo" 
 MONGODB_COLLECTION = "events"
+MONGODB_VISITED_URLS = "visited_urls"
+
 
 
 LOG_LEVEL = 'INFO'

@@ -20,7 +20,7 @@ class JsonPipeline(object):
 
     def process_item(self, item, spider):
         #line = json.dumps(dict(item), ensure_ascii=False) + "\n"
-        line = _encoder.encode(item);
+        line = _encoder.encode(item) + "\n";
         self.file.write(line)
         #self.file.write(_encoder.encode(line))
         return item

@@ -4,16 +4,24 @@ from eventSpider.items.item import EventItem
 from scrapy.selector import HtmlXPathSelector 
 from scrapy.http import Request
 import time
-from eventSpider.items.MyDateUtil import DamaiDateUtil
+from eventSpider.items.dateUtil import DamaiDateUtil
 
 class damaiSpider(scrapy.Spider):
     name = "damai"
     allowed_domains = ["damai.cn"]
-#    start_urls = [
-#        "http://www.damai.cn/projectlist.do",
- #   ]
-    start_urls = ["http://www.damai.cn/projectlist.do?pageIndex=%d" %(i+1) for i in range(1)]
 
+    #start_urls = ["http://www.damai.cn/projectlist.do?pageIndex=%d" %(i+1) for i in range(1)]
+
+    # for testing    
+    start_urls = [
+        "http://item.damai.cn/94335.html",
+    ]
+
+    def parse(self, response):
+        link="http://item.damai.cn/94335.html"
+        yield Request(link,callback=self.parseEvent)
+
+    '''
     def parse(self, response):       
         #time.sleep(2) 
         
@@ -27,6 +35,7 @@ class damaiSpider(scrapy.Spider):
         for link in links:
             yield Request(link,callback=self.parseEvent)
             
+    '''
     def parseEvent(self, response):
         '''
         filename = response.url.split("/")[3]
@@ -35,7 +44,7 @@ class damaiSpider(scrapy.Spider):
         
         '''
         item=EventItem()
-        item['url']=response.url
+        item['srcUrl']=response.url
         
         item['title']=response.selector.xpath('//div[@class="m-goods"]/h2[@class="tt"]/span[@class="txt"]/text()')[0].extract()
         
