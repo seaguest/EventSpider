@@ -5,6 +5,7 @@ from scrapy.selector import HtmlXPathSelector
 from scrapy.http import Request
 import time
 from eventSpider.items.dateUtil import DamaiDateUtil
+from textAnalyzer.jieba.keywords import keyWordGenerator
 
 class damaiSpider(scrapy.Spider):
     name = "damai"
@@ -44,13 +45,12 @@ class damaiSpider(scrapy.Spider):
         
         '''
         item=EventItem()
-        item['srcUrl']=response.url
-        
+        item['srcUrl']=response.url        
         item['title']=response.selector.xpath('//div[@class="m-goods"]/h2[@class="tt"]/span[@class="txt"]/text()')[0].extract()
-        
+        item['keywords']=keyWordGenerator.generateKeywords(item['title'])
+
         dateText = response.selector.xpath('//div[@class="m-sdbox m-showtime"]/div[@class="ct"]/span[@class="txt"]/text()')[0].extract()
         item['eventDate']=DamaiDateUtil.createEventDate(dateText);
-
 
         item['location']=response.selector.xpath('//div[@class="m-sdbox m-venue"]/div[@class="ct"]/p[@class="txt"]/a[@target="_blank"]/text()')[0].extract()
         
@@ -59,4 +59,7 @@ class damaiSpider(scrapy.Spider):
         item['image_urls']=response.selector.xpath('//img[@id="projectPoster"]/@src-original').extract()
 
         item['introduction']=response.selector.xpath('//div[@class="pre"]')[0].extract()
+        
+        item['fingerprint'] = str(item.computeFingerprint())
+
         return item  

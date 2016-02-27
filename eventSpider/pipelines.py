@@ -9,7 +9,9 @@ from scrapy.conf import settings
 from scrapy.exceptions import DropItem
 from scrapy import log
 import codecs
-import json
+from eventSpider.items.item import VisitedURL
+
+from eventSpider.filter.filter import DBManager
 from scrapy.pipelines.images import ImagesPipeline
 from scrapy.utils.serialize import ScrapyJSONEncoder
 _encoder = ScrapyJSONEncoder(ensure_ascii=False)
@@ -36,7 +38,7 @@ class DBPipeline(object):
             settings[ 'MONGODB_PORT' ]
         )
         db = connection[settings[ 'MONGODB_DB' ]]
-        self .collection = db[settings[ 'MONGODB_COLLECTION' ]]
+        self .collection = db[settings[ 'MONGODB_EVENTS' ]]
 
 
     def process_item( self , item, spider):
@@ -53,6 +55,28 @@ class DBPipeline(object):
     def spider_closed(self, spider):
         self.connection.close()
         
+        
+'''
+    check the event content crawled is not duplicated with some already stored event
+''' 
+class DuplicatesPipeline(object):
+    eventDB = DBManager(settings[ 'MONGODB_EVENTS' ])
+    visitedUrlDB = DBManager(settings[ 'MONGODB_VISITED_URLS' ])
+
+    def process_item(self, item, spider):
+        if self.eventDB.exist("fingerprint",item['fingerprint']):
+            """
+                if the event has been stored already, then add this URL to the visited url
+            """
+            cursor = self.eventDB.find("fingerprint",item['fingerprint'])            
+            visitedUrl = VisitedURL()
+            visitedUrl['url']=item['srcUrl']
+            visitedUrl['orgDupURL']=cursor[0]['srcUrl']
+            self.visitedUrlDB.insert(visitedUrl)
+            raise DropItem("Duplicate item found: %s" % item['title'])
+        else:
+            return item
+
         
 class MyImagesPipeline(ImagesPipeline):
     def file_path(self, request, response=None, info=None):

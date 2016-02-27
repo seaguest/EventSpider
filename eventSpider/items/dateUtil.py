@@ -22,7 +22,7 @@ class MyDateUtil():
     @staticmethod
     def parseDate(text):
         return parse(text)
-    
+        
 class DamaiDateUtil(MyDateUtil):
     '''
         Damai events are almost one-time events

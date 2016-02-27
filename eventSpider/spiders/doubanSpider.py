@@ -4,7 +4,6 @@ from eventSpider.items.item import EventItem
 from scrapy.selector import HtmlXPathSelector 
 from scrapy.http import Request
 from textAnalyzer.jieba.keywords import keyWordGenerator
-import time
 from eventSpider.items.dateUtil import DoubanDateUtil
 
 
@@ -48,13 +47,12 @@ class doubanSpider(scrapy.Spider):
 
         item['srcUrl']=response.url
         item['title']=response.selector.xpath('//div[@id="event-info"]/div[@class="event-info"]/h1[@itemprop="summary"]/text()')[0].extract()
-
         item['keywords']=keyWordGenerator.generateKeywords(item['title'])
 
         '''
             customized dates needs to be checked, multiple class "calendar-str-item"
         '''
-         #item['startTime']=response.selector.xpath('//div[@id="event-info"]/div[@class="event-info"]/div[@class="event-detail"]/ul[@class="calendar-strs"/li[@class="calendar-str-item"]/text()')[0].extract()
+        #item['startTime']=response.selector.xpath('//div[@id="event-info"]/div[@class="event-info"]/div[@class="event-detail"]/ul[@class="calendar-strs"/li[@class="calendar-str-item"]/text()')[0].extract()
         dateText = response.selector.xpath('//div[@id="event-info"]/div[@class="event-info"]/div[@class="event-detail"][1]/ul/li/text()')[0].extract()
         item['eventDate']=DoubanDateUtil.createEventDate(dateText)
 
@@ -66,6 +64,7 @@ class doubanSpider(scrapy.Spider):
 
         item['introduction']= response.selector.xpath('//div[@id="link-report"]/div')[0].extract()
 
+        item['fingerprint'] = str(item.computeFingerprint())
 
         return item  
     
