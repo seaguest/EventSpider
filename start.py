@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
+
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
@@ -7,6 +10,6 @@ process = CrawlerProcess(get_project_settings())
 
 process.crawl('damai', domain='damai.cn')
 
-#process.crawl('douban', domain='douban.com')
+# process.crawl('douban', domain='douban.com')
 
-process.start() # the script will block here until the crawling is finished
+process.start()  # the script will block here until the crawling is finished

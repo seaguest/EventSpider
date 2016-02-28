@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- 
 
-
 from scrapy.item import Item, Field
 
 class EventDate(Item):
 	unitDate = Field()
 	repeateType = Field()
-	dates = Field()	# list of all UnitEventDate, calculated based on unitEventDate and repeatMode
+	dates = Field()  # list of all UnitEventDate, calculated based on unitEventDate and repeatMode
 
 '''
 	UnitEventDate should be combined with RepeateType
@@ -21,8 +20,8 @@ class EventDate(Item):
 '''
 class UnitEventDate(Item):
 	# define the basic unit date for event 
-	startDate = Field()	# datetime.datetime format
-	endDate = Field()	# datetime.datetime format
+	startDate = Field()  # datetime.datetime format
+	endDate = Field()  # datetime.datetime format
 
 class RepeateType(Item):
 	# define the repeat mode 				
@@ -30,4 +29,4 @@ class RepeateType(Item):
 	# 	1:repeatable
 	# 	2:customizable
 	type = Field()		
-	frequency = Field()		# {0,1,2,3,4,5,6}
+	frequency = Field()  # {0,1,2,3,4,5,6}
