@@ -16,7 +16,7 @@ class CustomFilter(RFPDupeFilter):
 
     def request_seen(self, request):
         if self.db.exist("url", request.url):
-            return False
+            return True
         else:
             visitedUrl = VisitedURL()
             visitedUrl['url'] = request.url

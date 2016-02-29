@@ -77,14 +77,13 @@ ITEM_PIPELINES = {
     'eventSpider.pipelines.MyImagesPipeline':1,
 }
 
-IMAGES_STORE = '/home/seaguest/Spider/Picture/1'
+IMAGES_STORE = './Picture'
 
 MONGODB_SERVER = "localhost" 
 MONGODB_PORT = 27017 
 MONGODB_DB = "lehuo" 
 MONGODB_EVENTS = "events"
 MONGODB_VISITED_URLS = "visited_urls"
-
 
 
 LOG_LEVEL = 'INFO'
