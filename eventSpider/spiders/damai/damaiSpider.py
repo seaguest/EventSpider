@@ -6,22 +6,19 @@ from selenium import webdriver
 from eventSpider.items.item import EventItem
 from scrapy.selector import HtmlXPathSelector 
 from scrapy.http import Request
-from eventSpider.spiders.damai.util import DamaiDateUtil
-from textAnalyzer.jieba.keywords import keyWordGenerator
+from eventSpider.spiders.damai.util import DamaiDateUtil, DamaiLocationUtil
+from eventSpider.util.keywords.keywords import keyWordGenerator
 from scrapy.contrib.spiders import CrawlSpider
 
 class damaiSpider(CrawlSpider):
     name = "damai"
     allowed_domains = ["damai.cn"]
         
-    start_urls = ["http://www.damai.cn/projectlist.do?pageIndex=%d" % (i + 1) for i in range(1)]
-
     # for testing
-    '''
     start_urls = [
-        "http://item.damai.cn/94335.html",
+        "http://www.damai.cn/projectlist.do?pageIndex=%d" % (i + 1) for i in range(1)
+        # , "http://item.damai.cn/90925.html"
     ]
-    '''
 
     
     link_extractor = {
@@ -44,15 +41,13 @@ class damaiSpider(CrawlSpider):
     def __del__(self):
         self.browser.close()
     
-    '''    
-    def parse(self, response):
-        link = "http://item.damai.cn/94335.html"
-        yield Request(link, callback=self.parseEvent)
-    '''
-        
     # this method will be called before the spider quits
     def closed(self, reason):
         self.__del__()
+
+    def parseTest(self, response):
+        link = "http://item.damai.cn/90925.html"
+        yield Request(link, callback=self.parseEvent)
         
     def parse(self, response):       
         # time.sleep(2) 
@@ -92,7 +87,9 @@ class damaiSpider(CrawlSpider):
 
         item['eventDate'] = DamaiDateUtil.createEventDate(dates)
 
-        item['location'] = response.selector.xpath(self.query['location'])[0].extract()
+        locationText = response.selector.xpath(self.query['location'])[0].extract()
+        regionaddr = DamaiLocationUtil.getRegionAddresse(locationText)
+        item['location'] = DamaiLocationUtil.createLocation(regionaddr[0], regionaddr[1])
         
         item['organizer'] = "damai.cn"
 

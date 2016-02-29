@@ -8,8 +8,8 @@ process = CrawlerProcess(get_project_settings())
 
 # 'followall' is the name of one of the spiders of the project.
 
-process.crawl('damai', domain='damai.cn')
+# process.crawl('damai', domain='damai.cn')
 
-# process.crawl('douban', domain='douban.com')
+process.crawl('douban', domain='douban.com')
 
 process.start()  # the script will block here until the crawling is finished

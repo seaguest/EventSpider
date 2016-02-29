@@ -50,11 +50,11 @@ class LocationUtil():
         # in case the similarity is less than 0.5, return None
         maxSimilarity = 0.5
         bestMatchedPOI = None
-        js = LocationUtil.getPOIs(region, add)
+        js = LocationUtil.getPOIs(region, address)
         
 
         for record in js['results']:
-            currentSimilarity = LocationUtil.computeSimilarity(record['name'], add),
+            currentSimilarity = LocationUtil.computeSimilarity(record['name'], address),
             if currentSimilarity > maxSimilarity:
                 maxSimilarity = currentSimilarity
                 bestMatchedPOI = record
@@ -66,34 +66,13 @@ class LocationUtil():
     def createLocation(region, address):
         location = Location()
         location['region'] = region
-        matchedPOI = LocationUtil.getBestMatchedPOI(region, add)
+        matchedPOI = LocationUtil.getBestMatchedPOI(region, address)
+        
+        # print json.dumps(matchedPOI, indent=4, ensure_ascii=False)
+
         if matchedPOI:
             location['name'] = matchedPOI['name']
             location['address'] = matchedPOI['address']
         location['name'] = address
 
         return location
-
-
-
-region = "武汉"
-add = "华中科技大学"
-
-'''
-for record in js['results']:
-    print record['name'], add
-    print LocationUtil.computeSimilarity1(record['name'], add)
-'''
- 
-find = LocationUtil.createLocation(region, add)
-
-print repr(find)
-print type(find['name'])
-
-
-print unicode(find['name'], "utf-8")
-
-print find['name'].encode("utf-8")
-
-# print json.dumps(find, indent=4, ensure_ascii=False)
-

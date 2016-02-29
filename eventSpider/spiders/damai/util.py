@@ -5,7 +5,7 @@ import re
 
 from eventSpider.items.date import UnitEventDate, RepeateType, EventDate
 from eventSpider.util.dateUtil import DateUtil
-
+from eventSpider.util.locationUtil import LocationUtil
 
 class DamaiDateUtil(DateUtil):
     
@@ -57,3 +57,21 @@ class DamaiDateUtil(DateUtil):
         normalizedDate = re.sub(r'[^\d]', '', date)
         startDate = DamaiDateUtil.parseDate(normalizedDate)
         return startDate
+    
+
+'''
+    the location ondamai.cn are in format 'address - region'
+'''
+class DamaiLocationUtil(LocationUtil):
+        
+    @staticmethod
+    def getRegionAddresse(text):
+        if isinstance(text, unicode):
+            text = text.encode("utf-8")
+        
+        # remove the white spaces
+        rs = re.split('-', text)
+        region = ''.join(rs[1].split())
+        address = ''.join(rs[0].split())
+        return [region, address]
+    

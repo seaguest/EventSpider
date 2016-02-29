@@ -32,4 +32,4 @@ class EventItem(Item):
     
     def computeFingerprint(self):
         day = self['eventDate']['unitDate']['startDate'].timetuple().tm_yday
-        return hash(day) * 1 + hash(self['location']) * 4 + hash(frozenset(self['keywords'])) * 9
+        return hash(day) * 1 + hash(self['location']['name']) * 4 + hash(frozenset(self['keywords'])) * 9
