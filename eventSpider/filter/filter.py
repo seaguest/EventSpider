@@ -8,7 +8,7 @@ from eventSpider.items.url import VisitedURL
 from eventSpider.util.db import DBManager
 
 '''
-    customized URL fil    ter, check if the requested URL has been visited, if yes then skip.
+    customized URL filter, check if the requested URL has been visited, if yes then skip.
 '''
 class CustomFilter(RFPDupeFilter):
     """A dupe filter that considers specific ids in the url"""

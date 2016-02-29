@@ -17,11 +17,12 @@ class damaiSpider(CrawlSpider):
     start_urls = ["http://www.damai.cn/projectlist.do?pageIndex=%d" % (i + 1) for i in range(1)]
 
     # for testing
-    '''    
+    '''
     start_urls = [
         "http://item.damai.cn/94335.html",
     ]
     '''
+
     
     link_extractor = {
                       'page': '//ul[@id="performList"]/li/div[@class="ri-infos"]/h2/a/@href',
@@ -29,7 +30,6 @@ class damaiSpider(CrawlSpider):
     
     # put all xpatg query together
     query = {
-             
              'title':'//div[@class="m-goods"]/h2[@class="tt"]/span[@class="txt"]/text()',
              'dates':'//div[@id="performList"]/div[@class="ct"]/ul/li',
              'location':'//div[@class="m-sdbox m-venue"]/div[@class="ct"]/p[@class="txt"]/a[@target="_blank"]/text()',
@@ -43,13 +43,17 @@ class damaiSpider(CrawlSpider):
         
     def __del__(self):
         self.browser.close()
-        
-    '''
+    
+    '''    
     def parse(self, response):
-        link="http://item.damai.cn/94335.html"
-        yield Request(link,callback=self.parseEvent)
-
+        link = "http://item.damai.cn/94335.html"
+        yield Request(link, callback=self.parseEvent)
     '''
+        
+    # this method will be called before the spider quits
+    def closed(self, reason):
+        self.__del__()
+        
     def parse(self, response):       
         # time.sleep(2) 
         
@@ -62,7 +66,7 @@ class damaiSpider(CrawlSpider):
             links.append(urls[i])
         for link in links:
             yield Request(link, callback=self.parseEvent)
-            
+         
     def parseEvent(self, response):
         '''
         filename = response.url.split("/")[3]
@@ -77,7 +81,9 @@ class damaiSpider(CrawlSpider):
         seleniumDates = self.browser.find_elements_by_xpath(self.query['dates'])
         dates = []
         for date in seleniumDates:        
-            dates.append(date.text)
+            # only add only if the date is valid, we may see some non date related Chinese
+            if DamaiDateUtil.isValidDate(date.text):
+                dates.append(date.text)
 
         item = EventItem()
         item['srcUrl'] = response.url        

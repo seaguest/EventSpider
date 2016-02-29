@@ -8,6 +8,15 @@ from eventSpider.util.dateUtil import DateUtil
 
 
 class DamaiDateUtil(DateUtil):
+    
+    @staticmethod
+    def isValidDate(text):
+        text = ''.join(text.split())
+        # suppose all dates contains (\d+)-(\d+) or (\d+):(\d+)
+        matches = re.findall(r'(\d+)-(\d+)|(\d+):(\d+)', text) 
+        return len(matches) != 0
+    
+    
     '''
         Damai events are almost one-time events
     '''
