@@ -65,15 +65,16 @@ class DuplicatesPipeline(object):
     visitedUrlDB = DBManager(settings[ 'MONGODB_VISITED_URLS' ])
 
     def process_item(self, item, spider):
-        if self.eventDB.exist("fingerprint", item['fingerprint']):
+        cursor = self.eventDB.find("fingerprint", item['fingerprint']) 
+        if cursor.count() > 0:
             """
-                if the event has been stored already, then add this URL to the visited url
+                if the event has been stored already, then add this URL to the visited url in case it is not stored in visited_url yet
             """
-            cursor = self.eventDB.find("fingerprint", item['fingerprint'])            
-            visitedUrl = VisitedURL()
-            visitedUrl['url'] = item['srcUrl']
-            visitedUrl['orgDupURL'] = cursor[0]['srcUrl']
-            self.visitedUrlDB.insert(visitedUrl)
+            if not self.visitedUrlDB.exist("url", item['srcUrl']):
+                visitedUrl = VisitedURL()
+                visitedUrl['url'] = item['srcUrl']
+                visitedUrl['orgDupURL'] = cursor[0]['srcUrl']
+                self.visitedUrlDB.insert(visitedUrl)
             raise DropItem("Duplicate item found: %s" % item['title'])
         else:
             return item

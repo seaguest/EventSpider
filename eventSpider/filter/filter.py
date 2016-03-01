@@ -14,7 +14,11 @@ class CustomFilter(RFPDupeFilter):
     """A dupe filter that considers specific ids in the url"""
     db = DBManager(settings[ 'MONGODB_VISITED_URLS' ])
 
+    count = 0;
+
     def request_seen(self, request):
+        self.count += 1
+        print "XXXXXXXXXXXXXXXXX", self.count
         if self.db.exist("url", request.url):
             return True
         else:

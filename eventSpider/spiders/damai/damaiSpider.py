@@ -95,7 +95,7 @@ class damaiSpider(CrawlSpider):
 
         item['image_urls'] = response.selector.xpath(self.query['image_urls']).extract()
 
-        item['descripton'] = response.selector.xpath(self.query['descripton'])[0].extract()
+        item['description'] = response.selector.xpath(self.query['descripton'])[0].extract()
         
         item['fingerprint'] = str(item.computeFingerprint())
 

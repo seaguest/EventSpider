@@ -21,7 +21,7 @@ class EventItem(Item):
     
     keywords = Field()
     
-    descripton = Field()
+    description = Field()
     
     ''' we hash the event key words, date, location to make sure a event is unique'''
     fingerprint = Field()

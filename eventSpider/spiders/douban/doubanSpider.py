@@ -14,8 +14,9 @@ class doubanSpider(scrapy.Spider):
     allowed_domains = ["douban.com"]
     
     # for testing
+    testMode = True
     start_urls = [
-                  # , "http://www.douban.com/location/wuhan/events/future-all?start=%d" % (i * 10) for i in range(2)
+                  # m "http://www.douban.com/location/wuhan/events/future-all?start=%d" % (i * 10) for i in range(2)
                   "http://www.douban.com/event/26260280"
     ]
 
@@ -35,23 +36,19 @@ class doubanSpider(scrapy.Spider):
              'descripton':'//div[@id="link-report"]/div',
              }
 
-    def parse(self, response):
-        link = "http://www.douban.com/event/26260280"
-        yield Request(link, callback=self.parseEvent)
- 
-
-    def parse0(self, response):       
-        # time.sleep(2) 
-
-        hxs = HtmlXPathSelector(response)
-        links = []
-        urls = hxs.select().extract(self.link_extractor['page'])
-        length = len(urls)
-         
-        for i in range(0, length):
-            links.append(urls[i])
-        for link in links:
-            yield Request(link, callback=self.parseEvent)
+    def parse(self, response):       
+        if self.testMode == True:
+            yield Request(self.start_urls[0], callback=self.parseEvent)
+        else:
+            hxs = HtmlXPathSelector(response)
+            links = []
+            urls = hxs.select().extract(self.link_extractor['page'])
+            length = len(urls)
+             
+            for i in range(0, length):
+                links.append(urls[i])
+            for link in links:
+                yield Request(link, callback=self.parseEvent)
        
     def parseEvent(self, response):        
         item = EventItem()
@@ -74,7 +71,7 @@ class doubanSpider(scrapy.Spider):
 
         item['image_urls'] = response.selector.xpath(self.query['image_urls']).extract()
 
-        item['descripton'] = response.selector.xpath(self.query['descripton'])[0].extract()
+        item['description'] = response.selector.xpath(self.query['descripton'])[0].extract()
 
         item['fingerprint'] = str(item.computeFingerprint())
 

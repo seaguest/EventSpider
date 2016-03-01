@@ -47,8 +47,8 @@ class DoubanDateUtil(DateUtil):
             eventDate['repeateType'] = repeatType
      
         elif len(dates) == 2:  # we have two dates, repeatable events
-            startDateMaches = re.findall(r'((\d+)月(\d+)日)', dates[0])
-            endDateMaches = re.findall(r'((\d+)月(\d+)日)', dates[1])
+            startDateMaches = re.findall(ur'((\d+)\u6708(\d+)\u65e5)', dates[0])
+            endDateMaches = re.findall(ur'((\d+)\u6708(\d+)\u65e5)', dates[1])
             '''
             startDate = MyDateUtil.createDate(currentYear, int(startDateMaches[0][1]), int(startDateMaches[0][2]))
             endDate = MyDateUtil.createDate(currentYear, int(endDateMaches[0][1]), int(endDateMaches[0][2]))
