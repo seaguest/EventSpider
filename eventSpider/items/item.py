@@ -19,6 +19,35 @@ class EventItem(Item):
     
     organizer = Field()
     
+    category = Field()
+    
+    # indicate if the event is private or public 
+    private = Field()
+    
+    # indicate the price, 0 means free
+    expense = Field()
+    
+    # the maximum number of participant 
+    maxParticipant = Field()
+    
+    # list of participant id
+    participants = Field()
+    
+    # list of interested user id
+    interested = Field()
+
+    # list of comment
+    comments = Field()
+    
+    # number of ThumbUp
+    nbThumUps = Field()
+
+    # the valuation from user
+    star = Field()
+
+    # synthetical popularity
+    popularity = Field()
+    
     keywords = Field()
     
     description = Field()
@@ -31,5 +60,7 @@ class EventItem(Item):
     images = Field()
     
     def computeFingerprint(self):
-        day = self['eventDate']['unitDate']['startDate'].timetuple().tm_yday
+        day = 0
+        if 'eventDate' in self and 'unitDate' in self['eventDate'] and 'startDate' in self['eventDate']['unitDate']:
+            day = self['eventDate']['unitDate']['startDate'].timetuple().tm_yday
         return hash(day) * 1 + hash(self['location']['name']) * 4 + hash(frozenset(self['keywords'])) * 9

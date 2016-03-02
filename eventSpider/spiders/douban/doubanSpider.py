@@ -8,6 +8,7 @@ from scrapy.selector import HtmlXPathSelector
 from scrapy.http import Request
 from eventSpider.util.keywords.keywords import keyWordGenerator
 from eventSpider.spiders.douban.util import DoubanDateUtil, DoubanLocationUtil
+from eventSpider.filter.filter import CustomFilter
 
 class doubanSpider(scrapy.Spider):
     name = "douban"
@@ -16,8 +17,8 @@ class doubanSpider(scrapy.Spider):
     # for testing
     testMode = True
     start_urls = [
-                  # m "http://www.douban.com/location/wuhan/events/future-all?start=%d" % (i * 10) for i in range(2)
-                  "http://www.douban.com/event/26260280"
+                  # ,"http://www.douban.com/location/wuhan/events/future-all?start=%d" % (i * 10) for i in range(2)
+                  "http://www.douban.com/event/25578834"
     ]
 
     link_extractor = {
@@ -25,10 +26,11 @@ class doubanSpider(scrapy.Spider):
                   }
     
     # put all xpatg query together
-    query = {
-             
+    query = {             
              'title':'//div[@id="event-info"]/div[@class="event-info"]/h1[@itemprop="summary"]/text()',
              'dates':'//div[@id="event-info"]/div[@class="event-info"]/div[@class="event-detail"][1]/ul/li/text()',
+             'expense':'//div[@id="event-info"]/div[@class="event-info"]/div[@class="event-detail"][3]/text()',
+             'category':'//div[@id="event-info"]/div[@class="event-info"]/div[@class="event-detail"]/a[@itemprop="eventType"]/text()',
              'region':'//div[@class="event-detail"]/span[@itemprop="address"]/span[@itemprop="region"]/text()',
              'address':'//div[@class="event-detail"]/span[@itemprop="address"]/span[@itemprop="street-address"]/text()',
              'organizer':'//ul[@class="member_photo"]/li/div[@class="member-tip"]/div[@class="detail"]/a/text()',
@@ -42,7 +44,7 @@ class doubanSpider(scrapy.Spider):
         else:
             hxs = HtmlXPathSelector(response)
             links = []
-            urls = hxs.select().extract(self.link_extractor['page'])
+            urls = hxs.select(self.link_extractor['page']).extract()
             length = len(urls)
              
             for i in range(0, length):
@@ -53,8 +55,10 @@ class doubanSpider(scrapy.Spider):
     def parseEvent(self, response):        
         item = EventItem()
 
-        item['srcUrl'] = response.url
+        item['srcUrl'] = CustomFilter.normalizeURL(response.url)
         item['title'] = response.selector.xpath(self.query['title'])[0].extract()
+        
+        # TODO, the keywords in html can be used together with the ones analysed by jieba
         item['keywords'] = keyWordGenerator.generateKeywords(item['title'])
 
         '''
@@ -62,6 +66,11 @@ class doubanSpider(scrapy.Spider):
         '''
         dateText = response.selector.xpath(self.query['dates'])[0].extract()
         item['eventDate'] = DoubanDateUtil.createEventDate(dateText)
+
+        item['expense'] = response.selector.xpath(self.query['expense']).extract()[1]
+        item['category'] = response.selector.xpath(self.query['category']).extract()
+
+        item['private'] = False
 
         region = response.selector.xpath(self.query['region'])[0].extract()
         address = response.selector.xpath(self.query['address'])[0].extract()        

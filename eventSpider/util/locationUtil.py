@@ -52,9 +52,8 @@ class LocationUtil():
         bestMatchedPOI = None
         js = LocationUtil.getPOIs(region, address)
         
-
         for record in js['results']:
-            currentSimilarity = LocationUtil.computeSimilarity(record['name'], address),
+            currentSimilarity = LocationUtil.computeSimilarity(record['name'], address)
             if currentSimilarity > maxSimilarity:
                 maxSimilarity = currentSimilarity
                 bestMatchedPOI = record
@@ -72,7 +71,9 @@ class LocationUtil():
 
         if matchedPOI:
             location['name'] = matchedPOI['name']
-            location['address'] = matchedPOI['address']
+            # in some cases, the returned data doesn't contain address, ie:武汉－武汉市
+            if 'address' in matchedPOI:
+                location['address'] = matchedPOI['address']
         location['name'] = address
 
         return location

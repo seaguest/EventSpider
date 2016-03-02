@@ -23,7 +23,7 @@ class DBManager(object):
         return cursor
 
     def exist(self , name, value):
-        cursor = self.find(name, value)
+        cursor = self.collection.find({name:value})
         if cursor.count() > 0:
             return True
         else:

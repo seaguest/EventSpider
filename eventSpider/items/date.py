@@ -6,7 +6,9 @@ from scrapy.item import Item, Field
 class EventDate(Item):
 	unitDate = Field()
 	repeateType = Field()
+	lastRegistrationDate = Field() 
 	dates = Field()  # list of all UnitEventDate, calculated based on unitEventDate and repeatMode
+
 
 '''
 	UnitEventDate should be combined with RepeateType

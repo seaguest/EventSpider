@@ -9,15 +9,18 @@ from scrapy.http import Request
 from eventSpider.spiders.damai.util import DamaiDateUtil, DamaiLocationUtil
 from eventSpider.util.keywords.keywords import keyWordGenerator
 from scrapy.contrib.spiders import CrawlSpider
+from eventSpider.filter.filter import CustomFilter
 
 class damaiSpider(CrawlSpider):
     name = "damai"
     allowed_domains = ["damai.cn"]
         
     # for testing
+    testMode = True
+
     start_urls = [
-        "http://www.damai.cn/projectlist.do?pageIndex=%d" % (i + 1) for i in range(1)
-        # , "http://item.damai.cn/90925.html"
+        # , "http://www.damai.cn/projectlist.do?pageIndex=%d" % (i + 1) for i in range(1)
+        "http://item.damai.cn/94739.html"
     ]
 
     
@@ -30,6 +33,10 @@ class damaiSpider(CrawlSpider):
              'title':'//div[@class="m-goods"]/h2[@class="tt"]/span[@class="txt"]/text()',
              'dates':'//div[@id="performList"]/div[@class="ct"]/ul/li',
              'location':'//div[@class="m-sdbox m-venue"]/div[@class="ct"]/p[@class="txt"]/a[@target="_blank"]/text()',
+             
+             'category':'//div[@id="projectInfo"]/div[@class="hd"]/p/a/text()',
+             
+             
              'image_urls':'//img[@id="projectPoster"]/@src-original',
              'descripton':'//div[@class="pre"]',
              }
@@ -44,23 +51,20 @@ class damaiSpider(CrawlSpider):
     # this method will be called before the spider quits
     def closed(self, reason):
         self.__del__()
-
-    def parseTest(self, response):
-        link = "http://item.damai.cn/90925.html"
-        yield Request(link, callback=self.parseEvent)
         
     def parse(self, response):       
-        # time.sleep(2) 
-        
-        hxs = HtmlXPathSelector(response)
-        links = []
-        urls = hxs.select(self.link_extractor['page']).extract()
-        length = len(urls)
-         
-        for i in range(0, length):
-            links.append(urls[i])
-        for link in links:
-            yield Request(link, callback=self.parseEvent)
+        if self.testMode == True:
+            yield Request(self.start_urls[0], callback=self.parseEvent)
+        else:
+            hxs = HtmlXPathSelector(response)
+            links = []
+            urls = hxs.select(self.link_extractor['page']).extract()
+            length = len(urls)
+             
+            for i in range(0, length):
+                links.append(urls[i])
+            for link in links:
+                yield Request(link, callback=self.parseEvent)
          
     def parseEvent(self, response):
         '''
@@ -81,9 +85,13 @@ class damaiSpider(CrawlSpider):
                 dates.append(date.text)
 
         item = EventItem()
-        item['srcUrl'] = response.url        
+        item['srcUrl'] = CustomFilter.normalizeURL(response.url)
+   
         item['title'] = response.selector.xpath(self.query['title'])[0].extract()
         item['keywords'] = keyWordGenerator.generateKeywords(item['title'])
+        
+        item['category'] = response.selector.xpath(self.query['category'])[-1].extract()
+        item['private'] = False
 
         item['eventDate'] = DamaiDateUtil.createEventDate(dates)
 
